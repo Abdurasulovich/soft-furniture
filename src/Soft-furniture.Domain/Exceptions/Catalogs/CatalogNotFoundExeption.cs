@@ -4,6 +4,6 @@ public class CatalogNotFoundExeption : NotFoundExeption
 {
     public CatalogNotFoundExeption()
     {
-        this.TitleMessage = "Catalog not found!";   
+        this.TitleMessage = "Catalog not found!";
     }
 }

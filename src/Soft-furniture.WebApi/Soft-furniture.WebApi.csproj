@@ -13,11 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
     <Folder Include="Middlewares\" />
     <Folder Include="Filters\" />
     <Folder Include="Configuretions\" />
-    <Folder Include="wwwroot\media\images\" />
     <Folder Include="wwwroot\media\audios\" />
     <Folder Include="wwwroot\media\documents\" />
     <Folder Include="wwwroot\media\avatars\" />

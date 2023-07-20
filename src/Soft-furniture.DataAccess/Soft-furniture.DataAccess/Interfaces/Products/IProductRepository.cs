@@ -4,7 +4,7 @@ using Soft_furniture.Domain.Entities.Products;
 
 namespace Soft_furniture.DataAccess.Interfaces.Products;
 
-public interface IProductRepository : IRepository<Product, ProductViewModel>, 
+public interface IProductRepository : IRepository<Product, ProductViewModel>,
     IGetAll<ProductViewModel>, ISearchable<ProductViewModel>
 {
 

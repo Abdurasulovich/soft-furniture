@@ -4,7 +4,7 @@ using Soft_furniture.Domain.Entities.Delivers;
 
 namespace Soft_furniture.DataAccess.Interfaces.Delivers;
 
-public interface IDeliveryRepository : IRepository<Deliver, Deliver>, 
+public interface IDeliveryRepository : IRepository<Deliver, Deliver>,
     IGetAll<DeliverViewModel>
 {
     public Task<DeliverViewModel> GetAllDeliversAsync(long id);

@@ -12,5 +12,5 @@ public class ProductDiscount : Auditable
 
     public DateTime EndAt { get; set; }
 
-    public string Description { get; set; }  = string.Empty;
+    public string Description { get; set; } = string.Empty;
 }
