@@ -19,6 +19,8 @@ builder.Services.AddScoped<ICatalogService, CatalogService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
+//development, staging, production
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
