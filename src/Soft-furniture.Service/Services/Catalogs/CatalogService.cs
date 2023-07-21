@@ -1,4 +1,5 @@
 ﻿using Soft_furniture.DataAccess.Interfaces.Catalogs;
+using Soft_furniture.DataAccess.Utils;
 using Soft_furniture.Domain.Entities.Furniture_Catalog;
 using Soft_furniture.Domain.Exceptions.Catalog;
 using Soft_furniture.Domain.Exceptions.Files;
@@ -47,6 +48,47 @@ public class CatalogService : ICatalogService
         if (result == false) throw new ImageNotFoundException();
 
         var dbResult = await _catalogRepository.DeleteAsync(catalogId);
+        return dbResult > 0;
+    }
+
+    public async Task<IList<Catalog>> GetAllAsync(PaginationParams @params)
+    {
+        var catalog = await _catalogRepository.GetAllAsync(@params);
+        return catalog;
+    }
+
+    public async Task<Catalog> GetByIdAsync(long catalogId)
+    {
+        var catalog = await _catalogRepository.GetByIdAsync(catalogId);
+        if (catalog is null) throw new CatalogNotFoundExeption();
+        else return catalog;
+    }
+
+    public async Task<bool> UpdateAsync(long catalogId, CatalogUpdateDto dto)
+    {
+        var catalog = await _catalogRepository.GetByIdAsync(catalogId);
+        if(catalog is null) throw new CatalogNotFoundExeption();
+
+        //parse new items to catalog
+        catalog.Name= dto.Name;
+
+        if(dto.ImagePath is not null)
+        {
+            //delete old image
+            var deleteResult = await _fileService.DeleteImageAsync(catalog.ImagePath);
+            if(deleteResult is false) throw new ImageNotFoundException();
+
+            //upload new image
+            string newImagePath = await _fileService.UploadImageAsync(dto.ImagePath);
+            
+            //parse new path to catalog
+            catalog.ImagePath = newImagePath;
+        }
+        //else catalog old image have to save
+
+        catalog.UpdatedAt = TimeHelper.GetDateTime();
+
+        var dbResult = await _catalogRepository.UpdateAsync(catalogId, catalog);
         return dbResult > 0;
     }
 }

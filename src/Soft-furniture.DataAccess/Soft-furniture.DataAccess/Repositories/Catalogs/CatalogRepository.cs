@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.VisualBasic;
 using Soft_furniture.DataAccess.Interfaces.Catalogs;
 using Soft_furniture.DataAccess.Utils;
 using Soft_furniture.Domain.Entities.Furniture_Catalog;
@@ -76,7 +77,7 @@ public class CatalogRepository : BaseRepository, ICatalogRepository
         {
             await _connection.OpenAsync();
             string query = "SELECT * FROM furniture_catalog ORDER BY id desc " +
-                $"offset {@params.SkipCount} limit {@params.PageSize}";
+                $"offset {@params.GetSkipCount()} limit {@params.PageSize}";
             var result = (await _connection.QueryAsync<Catalog>(query)).ToList();
             return result;
 
@@ -112,8 +113,25 @@ public class CatalogRepository : BaseRepository, ICatalogRepository
         }
     }
 
-    public Task<int> UpdateAsync(long id, Catalog entity)
+    public async Task<int> UpdateAsync(long id, Catalog entity)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await _connection.OpenAsync();
+            string query = "UPDATE furniture_catalog " +
+                "SET name=@Name, image_path=@ImagePath, created_at = @CreatedAt, updated_at=@UpdatedAt " +
+                $"WHERE id={id};";
+
+            var result = await _connection.ExecuteAsync(query, entity);
+            return result;
+        }
+        catch
+        {
+            return 0;
+        }
+        finally
+        {
+            await _connection.CloseAsync();
+        }
     }
 }
