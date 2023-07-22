@@ -4,6 +4,9 @@ using Soft_furniture.DataAccess.Utils;
 using Soft_furniture.Service.Dtos.Catalogs;
 using Soft_furniture.Service.Dtos.Types;
 using Soft_furniture.Service.Interfaces.Catalogs;
+using Soft_furniture.Service.Interfaces.Furniture_types;
+using Soft_furniture.Service.Validators.Dtos.Catalogs;
+using Soft_furniture.Service.Validators.Dtos.Furniture_types;
 
 namespace Soft_furniture.WebApi.Controllers
 {
@@ -11,11 +14,11 @@ namespace Soft_furniture.WebApi.Controllers
     [ApiController]
     public class TypeController : ControllerBase
     {
-        private ITypeSer _service;
+        private ITypeService _service;
         private readonly int maxPageSize = 30;
         public TypeController(ICatalogService service)
         {
-            this._service = service;
+            this._service = _service;
         }
 
         [HttpGet]
@@ -32,7 +35,16 @@ namespace Soft_furniture.WebApi.Controllers
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromForm] TypeCreateDto dto)
-            => Ok(await _service.CreateAsync(dto));
+        {
+            var createValidator = new TypeCreateValidator();
+            var result = createValidator.Validate(dto);
+
+            if (result.IsValid) return Ok(await _service.CreateAsync(dto));
+            else
+            {
+                return BadRequest(result.Errors);
+            }
+        }
 
         [HttpPut("{TypeId}")]
         public async Task<IActionResult> UpdateAsync(long typeId, [FromForm] TypeUpdateDto dto)

@@ -3,6 +3,8 @@ using Soft_furniture.DataAccess.Utils;
 using Soft_furniture.Domain.Entities.Furniture_Catalog;
 using Soft_furniture.Service.Dtos.Catalogs;
 using Soft_furniture.Service.Interfaces.Catalogs;
+using Soft_furniture.Service.Validators.Dtos.Catalogs;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Soft_furniture.WebApi.Controllers;
 
@@ -31,11 +33,25 @@ public class CatalogController : ControllerBase
 
     [HttpPost]
     public async Task<IActionResult> CreateAsync([FromForm] CatalogCreateDto dto)
-        => Ok(await _service.CreateAsync(dto));
+    {
+        var createValidator = new CatalogCreateValidator();
+        var result = createValidator.Validate(dto);
+
+        if(result.IsValid) return Ok(await _service.CreateAsync(dto));
+        else
+        {
+            return BadRequest(result.Errors);
+        }
+    }
 
     [HttpPut("{catalogId}")]
     public async Task<IActionResult> UpdateAsync(long catalogId, [FromForm] CatalogUpdateDto dto)
-        =>Ok(await _service.UpdateAsync(catalogId, dto));
+    {
+        var updateValidator = new CatalogUpdateValidator();
+        var validationResult = updateValidator.Validate(dto);
+        if (validationResult.IsValid) return Ok(await _service.UpdateAsync(catalogId, dto));
+        else return BadRequest(validationResult.Errors);
+    }
 
     [HttpDelete]
     public async Task<IActionResult> DeleteAsync(long catalogId)
@@ -45,7 +61,7 @@ public class CatalogController : ControllerBase
 
     //[HttpGet("{catalogId}/products")]
     //public async Task<IActionResult> GetProductsByCatalodIdAsync(long catalogId, [FromQuery] PaginationParams @params)
-    //    => Ok(catalogId);
+    //    => Ok(catalogId); 
     //#endregion
 
     
