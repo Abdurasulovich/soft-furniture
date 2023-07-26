@@ -3,6 +3,7 @@ using Soft_furniture.DataAccess.Interfaces.Catalogs;
 using Soft_furniture.DataAccess.Interfaces.Types;
 using Soft_furniture.DataAccess.Repositories.Catalogs;
 using Soft_furniture.DataAccess.Utils;
+using Soft_furniture.DataAccess.ViewModels.Furniture_Types;
 using Soft_furniture.Domain.Entities.Furniture_Catalog;
 using Soft_furniture.Domain.Entities.Furniture_Type;
 using Soft_furniture.Domain.Exceptions.Catalog;
@@ -39,6 +40,7 @@ public class TypeService : ITypeService
         Furniture_Type type = new Furniture_Type()
         {
             Name = dto.Name,
+            FurnitureCatalogId = dto.FurnitureCatalogId,
             ImagePath = imagepath,
             Description = dto.Description,
             CreatedAt = TimeHelper.GetDateTime(),
@@ -60,7 +62,7 @@ public class TypeService : ITypeService
         return dbResult > 0;
     }
 
-    public async Task<IList<Furniture_Type>> GetAllAsync(PaginationParams @params)
+    public async Task<IList<Furniture_typeViewModel>> GetAllAsync(PaginationParams @params)
     {
         var type = await _typeRepository.GetAllAsync(@params);
         return type;
@@ -76,10 +78,11 @@ public class TypeService : ITypeService
     public async Task<bool> UpdateAsync(long typeId, TypeUpdateDto dto)
     {
         var type = await _typeRepository.GetByIdAsync(typeId);
-        if (type is null) throw new CatalogNotFoundExeption();
+        if (type is null) throw new TypeNotFoundException();
 
         //parse new items to type
         type.Name = dto.Name;
+        type.FurnitureCatalogId = dto.FurnitureCatalogId;
         type.Description = dto.Description;
 
         if (dto.ImagePath is not null)

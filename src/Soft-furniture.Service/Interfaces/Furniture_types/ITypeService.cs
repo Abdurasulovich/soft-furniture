@@ -1,4 +1,5 @@
 ﻿using Soft_furniture.DataAccess.Utils;
+using Soft_furniture.DataAccess.ViewModels.Furniture_Types;
 using Soft_furniture.Domain.Entities.Furniture_Catalog;
 using Soft_furniture.Domain.Entities.Furniture_Type;
 using Soft_furniture.Service.Dtos.Catalogs;
@@ -14,7 +15,7 @@ public interface ITypeService
 
     public Task<long> CountAsync();
 
-    public Task<IList<Furniture_Type>> GetAllAsync(PaginationParams @params);
+    public Task<IList<Furniture_typeViewModel>> GetAllAsync(PaginationParams @params);
 
     public Task<Furniture_Type> GetByIdAsync(long typeId);
 

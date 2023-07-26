@@ -16,7 +16,7 @@ namespace Soft_furniture.WebApi.Controllers
     {
         private ITypeService _service;
         private readonly int maxPageSize = 30;
-        public TypeController(ICatalogService service)
+        public TypeController(ICatalogService service, ITypeService _service)
         {
             this._service = _service;
         }
@@ -25,7 +25,7 @@ namespace Soft_furniture.WebApi.Controllers
         public async Task<IActionResult> GetAllAsync([FromQuery] int page = 1)
             => Ok(await _service.GetAllAsync(new PaginationParams(page, maxPageSize)));
 
-        [HttpGet("{TypeId}")]
+        [HttpGet("{typeId}")]
         public async Task<IActionResult> GetByIdAsync(long typeId)
             => Ok(await _service.GetByIdAsync(typeId));
 
@@ -46,13 +46,13 @@ namespace Soft_furniture.WebApi.Controllers
             }
         }
 
-        [HttpPut("{TypeId}")]
+        [HttpPut("{typeId}")]
         public async Task<IActionResult> UpdateAsync(long typeId, [FromForm] TypeUpdateDto dto)
             => Ok(await _service.UpdateAsync(typeId, dto));
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteAsync(long catalogId)
-            => Ok(await _service.DeleteAsync(catalogId));
+        public async Task<IActionResult> DeleteAsync(long typeId)
+            => Ok(await _service.DeleteAsync(typeId));
 
         //#region Products
 

@@ -1,11 +1,11 @@
 ﻿using Soft_furniture.DataAccess.Common.Interfaces;
-using Soft_furniture.DataAccess.ViewModels.Products;
+using Soft_furniture.DataAccess.Utils;
 using Soft_furniture.Domain.Entities.Products;
 
 namespace Soft_furniture.DataAccess.Interfaces.Products;
 
-public interface IProductRepository : IRepository<Product, ProductViewModel>,
-    IGetAll<ProductViewModel>, ISearchable<ProductViewModel>
+public interface IProductRepository : IRepository<Product, Product>,
+    ISearchable<Product>
 {
-
+    public Task<IList<Product>> GetAllByTypeIdAsync(long typeId, PaginationParams @params);
 }

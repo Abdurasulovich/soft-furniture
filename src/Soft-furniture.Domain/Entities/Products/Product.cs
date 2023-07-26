@@ -9,8 +9,6 @@ public class Product : Auditable
 
     public string ImagePath { get; set; } = String.Empty;
 
-    public long FurnitureCatalogId { get; set; }
-
     public long FurnitureTypeId { get; set; }
 
     public double UnitPrice { get; set; }

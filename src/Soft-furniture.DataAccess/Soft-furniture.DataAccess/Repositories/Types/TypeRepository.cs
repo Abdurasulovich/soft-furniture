@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Soft_furniture.DataAccess.Interfaces.Types;
 using Soft_furniture.DataAccess.Utils;
+using Soft_furniture.DataAccess.ViewModels.Furniture_Types;
 using Soft_furniture.Domain.Entities.Furniture_Catalog;
 using Soft_furniture.Domain.Entities.Furniture_Type;
 using System;
@@ -41,7 +42,7 @@ public class TypeRepository : BaseRepository, ITypeRepository
         {
             await _connection.OpenAsync();
             string query = "INSERT INTO furniture_type(name, furniture_catalog_id, image_path, description, created_at, updated_at) " +
-	                        "VALUES(@Name, @FurnitureCatalogId, @ImagePath, @Description, @CreatedAt, @UpdatedAt); ";
+                            "VALUES(@Name, @FurnitureCatalogId, @ImagePath, @Description, @CreatedAt, @UpdatedAt); ";
             var result = await _connection.ExecuteAsync(query, entity);
             return result;
 
@@ -76,20 +77,20 @@ public class TypeRepository : BaseRepository, ITypeRepository
         }
     }
 
-    public async Task<IList<Furniture_Type>> GetAllAsync(PaginationParams @params)
+    public async Task<IList<Furniture_typeViewModel>> GetAllAsync(PaginationParams @params)
     {
         try
         {
             await _connection.OpenAsync();
-            string query = "SELECT * FROM furniture_type ORDER BY id desc " +
+            string query = "SELECT * FROM \"FurnitureTypeViewModel\" ORDER BY id desc " +
                 $"offset {@params.GetSkipCount()} limit {@params.PageSize}";
-            var result = (await _connection.QueryAsync<Furniture_Type>(query)).ToList();
+            var result = (await _connection.QueryAsync<Furniture_typeViewModel>(query)).ToList();
             return result;
 
         }
         catch
         {
-            return new List<Furniture_Type>();
+            return new List<Furniture_typeViewModel>();
         }
         finally
         {
