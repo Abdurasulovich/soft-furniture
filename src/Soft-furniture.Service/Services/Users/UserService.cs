@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Soft_furniture.DataAccess.Interfaces.Products;
 using Soft_furniture.DataAccess.Interfaces.Users;
 using Soft_furniture.DataAccess.Utils;
@@ -10,6 +11,7 @@ using Soft_furniture.Domain.Exceptions.Product;
 using Soft_furniture.Domain.Exceptions.Users;
 using Soft_furniture.Service.Common.Helpers;
 using Soft_furniture.Service.Dtos.Products;
+using Soft_furniture.Service.Dtos.Security;
 using Soft_furniture.Service.Dtos.Users;
 using Soft_furniture.Service.Interfaces.Common;
 using Soft_furniture.Service.Interfaces.Users;
@@ -50,12 +52,28 @@ public class UserService : IUserService
         return (Result: true, CachedMinutes: CACHED_MINUTES_FOR_REGISTER);
     }
 
-    public Task<(bool Result, int CachedVerificationHours)> SendCodeForRegisterAsync(string phone)
+    public async Task<(bool Result, int CachedVerificationMinutes)> SendCodeForRegisterAsync(string phone)
     {
-        throw new NotImplementedException();
+        if(_memoryCache.TryGetValue(phone, out UserCreateDto userCreateDto))
+        {
+            VerificationDto verificationDto = new VerificationDto();
+            verificationDto.Attempt = 0;
+            verificationDto.CreatedAt = TimeHelper.GetDateTime();
+            //make confirm code as random
+            verificationDto.Code = 11111;
+            _memoryCache.Set(phone, verificationDto,
+                TimeSpan.FromMinutes(CACHED_MINUTES_FOR_VERIFICATION));
+
+            //sms sender::begin
+            //sms sender::end
+
+
+            return (Result: true, CachedVerificationHours: CACHED_MINUTES_FOR_VERIFICATION);
+        }
+        else throw new UserCacheDataExpiredException();
     }
 
-    public Task<(bool Result, string Token)> VarifyRegisterAsync(string phone, int code)
+    public async Task<(bool Result, string Token)> VarifyRegisterAsync(string phone, int code)
     {
         throw new NotImplementedException();
     }

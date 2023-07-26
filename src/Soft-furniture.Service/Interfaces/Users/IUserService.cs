@@ -15,7 +15,7 @@ public interface IUserService
 {
     public Task<(bool Result, int CachedMinutes)> RegisterAsync(UserCreateDto dto);
 
-    public Task<(bool Result, int CachedVerificationHours)> SendCodeForRegisterAsync(string phone);
+    public Task<(bool Result, int CachedVerificationMinutes)> SendCodeForRegisterAsync(string phone);
 
     public Task<(bool Result, string Token)> VarifyRegisterAsync(string phone, int code);
 }

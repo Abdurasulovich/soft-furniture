@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Soft_furniture.Service.Dtos.Users;
 using Soft_furniture.Service.Interfaces.Users;
+using Soft_furniture.Service.Validators;
 using Soft_furniture.Service.Validators.Dtos.Users;
 
 namespace Soft_furniture.WebApi.Controllers;
@@ -28,5 +29,15 @@ public class UserController : ControllerBase
             return Ok(new {serviceResult.Result, serviceResult.CachedMinutes});
         }
         else return BadRequest(result.Errors);
+    }
+
+    [HttpPost("register/send-code")]
+    public async Task<IActionResult> SendCodeRegisterAsync(string phone)
+    {
+        var result = PhoneNumberValidator.IsValid(phone);
+        if (result == false) return BadRequest("Phone number is invalid!");
+        
+        var serviceResult = await _userService.SendCodeForRegisterAsync(phone);
+        return Ok(new {serviceResult.Result, serviceResult.CachedVerificationMinutes  });
     }
 }
