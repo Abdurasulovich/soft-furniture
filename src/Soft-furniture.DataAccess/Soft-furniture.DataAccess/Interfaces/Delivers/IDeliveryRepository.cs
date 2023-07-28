@@ -4,8 +4,12 @@ using Soft_furniture.Domain.Entities.Delivers;
 
 namespace Soft_furniture.DataAccess.Interfaces.Delivers;
 
-public interface IDeliveryRepository : IRepository<Deliver, Deliver>,
+public interface IDeliveryRepository : IRepository<Deliver, DeliverViewModel>,
     IGetAll<DeliverViewModel>
 {
-    public Task<DeliverViewModel> GetAllDeliversAsync(long id);
+    public Task<Deliver?> GetByPhoneAsync(string phone);
+
+    public Task<Deliver?> GetByIdCheckUser(long id);
+
+
 }

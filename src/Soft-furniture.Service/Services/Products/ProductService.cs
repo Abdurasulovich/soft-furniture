@@ -1,8 +1,6 @@
-﻿using Soft_furniture.DataAccess.Interfaces.Catalogs;
+﻿using Microsoft.Extensions.Caching.Memory;
 using Soft_furniture.DataAccess.Interfaces.Products;
-using Soft_furniture.DataAccess.Repositories.Catalogs;
 using Soft_furniture.DataAccess.Utils;
-using Soft_furniture.Domain.Entities.Furniture_Catalog;
 using Soft_furniture.Domain.Entities.Products;
 using Soft_furniture.Domain.Exceptions.Catalog;
 using Soft_furniture.Domain.Exceptions.Files;
@@ -11,11 +9,6 @@ using Soft_furniture.Service.Common.Helpers;
 using Soft_furniture.Service.Dtos.Products;
 using Soft_furniture.Service.Interfaces.Common;
 using Soft_furniture.Service.Interfaces.Products;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Soft_furniture.Service.Services.Products;
 
@@ -23,12 +16,15 @@ public class ProductService : IProductService
 {
     private readonly IProductRepository _productRepository;
     private readonly IFileService _fileService;
+    private readonly IMemoryCache _memoryCache;
+    private const int CACHED_SECONDS = 30;
 
     public ProductService(IProductRepository productRepository,
-        IFileService fileService)
+        IFileService fileService, IMemoryCache memoryCache)
     {
         this._productRepository = productRepository;
         this._fileService = fileService;
+        this._memoryCache = memoryCache;
     }
     public async Task<long> CountAsync() => await _productRepository.CountAsync();
 
@@ -70,9 +66,18 @@ public class ProductService : IProductService
 
     public async Task<Product> GetByIdAsync(long productId)
     {
-        var product = await _productRepository.GetByIdAsync(productId);
-        if (product is null) throw new ProductNotFoundException();
-        else return product;
+        if (_memoryCache.TryGetValue(productId, out Product cachedProduct))
+        {
+            return cachedProduct!;
+        }
+        else
+        {
+            var product = await _productRepository.GetByIdAsync(productId);
+            if (product is null) throw new ProductNotFoundException();
+
+            _memoryCache.Set(productId, product, TimeSpan.FromSeconds(CACHED_SECONDS));
+            return product;
+        }
     }
 
     public async Task<(int ItemsCount, IList<Product>)> SearchAsync(string search, PaginationParams @params)

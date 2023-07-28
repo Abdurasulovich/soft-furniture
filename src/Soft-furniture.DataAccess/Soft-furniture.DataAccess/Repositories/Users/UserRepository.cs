@@ -2,13 +2,7 @@
 using Soft_furniture.DataAccess.Interfaces.Users;
 using Soft_furniture.DataAccess.Utils;
 using Soft_furniture.DataAccess.ViewModels.Users;
-using Soft_furniture.Domain.Entities.Products;
 using Soft_furniture.Domain.Entities.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Soft_furniture.DataAccess.Repositories.Users;
 
@@ -41,8 +35,9 @@ public class UserRepository : BaseRepository, IUserRepository
         {
             await _connection.OpenAsync();
             string query = "INSERT INTO " +
-                "users(first_name, last_name, phone_number, phone_number_confirmed, password_hash, salt, country, region, city, address, created_at, updated_at) " +
-                "VALUES (@FirstName @LastName, @PhoneNumber, @PhoneNumberConfirmed, @Password_hash, @Salt, @Country, @Region, @City, @Address, @CreatedAt, @UpdatedAt);";
+                "users(first_name, last_name, phone_number, phone_number_confirmed, password_hash, salt, country, " +
+                "region, city, address, created_at, updated_at, identityrole) " +
+                "VALUES (@FirstName, @LastName, @PhoneNumber, @PhoneNumberConfirmed, @PasswordHash, @Salt, @Country, @Region, @City, @Address, @CreatedAt, @UpdatedAt, @IdentityRole);";
             var result = await _connection.ExecuteAsync(query, entity);
             return result;
 
@@ -118,6 +113,25 @@ public class UserRepository : BaseRepository, IUserRepository
         }
     }
 
+    public async Task<User?> GetByIdCheckUser(long id)
+    {
+        try
+        {
+            await _connection.OpenAsync();
+            string query = "Select * From users where id=@Id";
+            var result = await _connection.QuerySingleAsync<User>(query, new { Id = id });
+            return result;
+        }
+        catch
+        {
+            return null;
+        }
+        finally
+        {
+            await _connection.CloseAsync();
+        }
+    }
+
     public async Task<User?> GetByPhoneAsync(string phone)
     {
         try
@@ -165,8 +179,8 @@ public class UserRepository : BaseRepository, IUserRepository
         try
         {
             await _connection.OpenAsync();
-            string query = "UPDATE products " +
-                "SET first_name=@FirstName, last_name=@LastName, phone_number=@PhoneNumber, phone_number_confirmed=@PhoneNumberConfirmed, password_hash=@Password_hash, salt=@Salt, country=@Country, region=@Region, city=@City, address=@Address, created_at=@CreatedAt, updated_at=@UpdatedAt " +
+            string query = "UPDATE users " +
+                "SET first_name=@FirstName, last_name=@LastName, phone_number=@PhoneNumber, phone_number_confirmed=@PhoneNumberConfirmed, password_hash=@PasswordHash, salt=@Salt, country=@Country, region=@Region, city=@City, address=@Address, created_at=@CreatedAt, updated_at=@UpdatedAt, identityrole=@IdentityRole" +
                 $"WHERE id={id};";
 
             var result = await _connection.ExecuteAsync(query, entity);

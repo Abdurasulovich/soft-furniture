@@ -1,11 +1,4 @@
-﻿using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Soft_furniture.Service.Validators
+﻿namespace Soft_furniture.Service.Validators
 {
     public class PhoneNumberValidator
     {

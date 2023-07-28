@@ -14,7 +14,11 @@ public class Deliver : Human
 
     public string Salt { get; set; } = String.Empty;
 
+    public DateTime BirthDate { get; set; }
+
     [MaxLength(9)]
-    public string PasswordSeriaNumber { get; set; } = String.Empty;
+    public string PasspordSeriaNumber { get; set; } = String.Empty;
+
+    public string Description { get; set; } = String.Empty;
 
 }

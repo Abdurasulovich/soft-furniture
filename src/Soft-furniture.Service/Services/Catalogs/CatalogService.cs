@@ -1,4 +1,5 @@
-﻿using Soft_furniture.DataAccess.Interfaces.Catalogs;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Soft_furniture.DataAccess.Interfaces.Catalogs;
 using Soft_furniture.DataAccess.Utils;
 using Soft_furniture.Domain.Entities.Furniture_Catalog;
 using Soft_furniture.Domain.Exceptions.Catalog;
@@ -14,12 +15,15 @@ public class CatalogService : ICatalogService
 {
     private readonly ICatalogRepository _catalogRepository;
     private readonly IFileService _fileService;
+    private readonly IMemoryCache _memoryCache;
+    private const int CACHED_SECONDS = 30;
 
     public CatalogService(ICatalogRepository catalogRepository,
-        IFileService fileService)
+        IFileService fileService, IMemoryCache memoryCache)
     {
         this._catalogRepository = catalogRepository;
         this._fileService = fileService;
+        this._memoryCache = memoryCache;
     }
 
     public async Task<long> CountAsync() => await _catalogRepository.CountAsync();
@@ -59,28 +63,37 @@ public class CatalogService : ICatalogService
 
     public async Task<Catalog> GetByIdAsync(long catalogId)
     {
-        var catalog = await _catalogRepository.GetByIdAsync(catalogId);
-        if (catalog is null) throw new CatalogNotFoundExeption();
-        else return catalog;
+        if (_memoryCache.TryGetValue(catalogId, out Catalog cachedCatalog))
+        {
+            return cachedCatalog!;
+        }
+        else
+        {
+            var catalog = await _catalogRepository.GetByIdAsync(catalogId);
+            if (catalog is null) throw new CatalogNotFoundExeption();
+
+            _memoryCache.Set(catalogId, catalog, TimeSpan.FromSeconds(CACHED_SECONDS));
+            return catalog;
+        }
     }
 
     public async Task<bool> UpdateAsync(long catalogId, CatalogUpdateDto dto)
     {
         var catalog = await _catalogRepository.GetByIdAsync(catalogId);
-        if(catalog is null) throw new CatalogNotFoundExeption();
+        if (catalog is null) throw new CatalogNotFoundExeption();
 
         //parse new items to catalog
-        catalog.Name= dto.Name;
+        catalog.Name = dto.Name;
 
-        if(dto.ImagePath is not null)
+        if (dto.ImagePath is not null)
         {
             //delete old image
             var deleteResult = await _fileService.DeleteImageAsync(catalog.ImagePath);
-            if(deleteResult is false) throw new ImageNotFoundException();
+            if (deleteResult is false) throw new ImageNotFoundException();
 
             //upload new image
             string newImagePath = await _fileService.UploadImageAsync(dto.ImagePath);
-            
+
             //parse new path to catalog
             catalog.ImagePath = newImagePath;
         }

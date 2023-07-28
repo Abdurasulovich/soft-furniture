@@ -1,14 +1,6 @@
 ﻿using Soft_furniture.DataAccess.Utils;
-using Soft_furniture.Domain.Entities.Furniture_Catalog;
 using Soft_furniture.Domain.Entities.Products;
-using Soft_furniture.Service.Dtos.Catalogs;
 using Soft_furniture.Service.Dtos.Products;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Soft_furniture.Service.Interfaces.Products;
 

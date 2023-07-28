@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Soft_furniture.Domain.Entities;
 
 namespace Soft_furniture.Service.Dtos.Types;
 

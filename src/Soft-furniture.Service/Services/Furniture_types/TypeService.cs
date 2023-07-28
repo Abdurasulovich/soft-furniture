@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Soft_furniture.DataAccess.Interfaces.Catalogs;
+﻿using Microsoft.Extensions.Caching.Memory;
 using Soft_furniture.DataAccess.Interfaces.Types;
-using Soft_furniture.DataAccess.Repositories.Catalogs;
 using Soft_furniture.DataAccess.Utils;
 using Soft_furniture.DataAccess.ViewModels.Furniture_Types;
-using Soft_furniture.Domain.Entities.Furniture_Catalog;
 using Soft_furniture.Domain.Entities.Furniture_Type;
 using Soft_furniture.Domain.Exceptions.Catalog;
 using Soft_furniture.Domain.Exceptions.Files;
@@ -13,11 +10,6 @@ using Soft_furniture.Service.Common.Helpers;
 using Soft_furniture.Service.Dtos.Types;
 using Soft_furniture.Service.Interfaces.Common;
 using Soft_furniture.Service.Interfaces.Furniture_types;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Soft_furniture.Service.Services.Furniture_types;
 
@@ -25,12 +17,16 @@ public class TypeService : ITypeService
 {
     private readonly ITypeRepository _typeRepository;
     private readonly IFileService _fileService;
+    private readonly IMemoryCache _memoryCache;
+    private const int CACHED_SECONDS = 30;
 
     public TypeService(ITypeRepository typeRepository,
-        IFileService fileService)
+        IFileService fileService, IMemoryCache memoryCache)
     {
         this._typeRepository = typeRepository;
         this._fileService = fileService;
+        this._memoryCache = memoryCache;
+
     }
     public async Task<long> CountAsync() => await _typeRepository.CountAsync();
 
@@ -70,9 +66,18 @@ public class TypeService : ITypeService
 
     public async Task<Furniture_Type> GetByIdAsync(long typeId)
     {
-        var type = await _typeRepository.GetByIdAsync(typeId);
-        if (type is null) throw new TypeNotFoundException();
-        else return type;
+        if (_memoryCache.TryGetValue(typeId, out Furniture_Type cachedType))
+        {
+            return cachedType!;
+        }
+        else
+        {
+            var type = await _typeRepository.GetByIdAsync(typeId);
+            if (type is null) throw new TypeNotFoundException();
+
+            _memoryCache.Set(typeId, type, TimeSpan.FromSeconds(CACHED_SECONDS));
+            return type;
+        }
     }
 
     public async Task<bool> UpdateAsync(long typeId, TypeUpdateDto dto)

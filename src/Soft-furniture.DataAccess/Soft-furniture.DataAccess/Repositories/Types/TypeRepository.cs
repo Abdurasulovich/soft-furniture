@@ -2,14 +2,7 @@
 using Soft_furniture.DataAccess.Interfaces.Types;
 using Soft_furniture.DataAccess.Utils;
 using Soft_furniture.DataAccess.ViewModels.Furniture_Types;
-using Soft_furniture.Domain.Entities.Furniture_Catalog;
 using Soft_furniture.Domain.Entities.Furniture_Type;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Soft_furniture.DataAccess.Repositories.Types;
 

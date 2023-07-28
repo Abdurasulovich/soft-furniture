@@ -1,12 +1,6 @@
 ﻿using FluentValidation;
-using FluentValidation.Validators;
 using Soft_furniture.Service.Common.Helpers;
 using Soft_furniture.Service.Dtos.Catalogs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Soft_furniture.Service.Validators.Dtos.Catalogs;
 

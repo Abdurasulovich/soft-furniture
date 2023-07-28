@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Soft_furniture.DataAccess.Utils;
-using Soft_furniture.Domain.Entities.Furniture_Catalog;
 using Soft_furniture.Service.Dtos.Catalogs;
 using Soft_furniture.Service.Interfaces.Catalogs;
 using Soft_furniture.Service.Validators.Dtos.Catalogs;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Soft_furniture.WebApi.Controllers;
 
@@ -20,24 +19,29 @@ public class CatalogController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAllAsync([FromQuery] int page = 1)
         => Ok(await _service.GetAllAsync(new PaginationParams(page, maxPageSize)));
 
     [HttpGet("{catalogId}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetByIdAsync(long catalogId)
-        => Ok(await _service.GetByIdAsync(catalogId)); 
+        => Ok(await _service.GetByIdAsync(catalogId));
 
     [HttpGet("count")]
+    [AllowAnonymous]
     public async Task<IActionResult> CountAsync()
         => Ok(await _service.CountAsync());
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
+
     public async Task<IActionResult> CreateAsync([FromForm] CatalogCreateDto dto)
     {
         var createValidator = new CatalogCreateValidator();
         var result = createValidator.Validate(dto);
 
-        if(result.IsValid) return Ok(await _service.CreateAsync(dto));
+        if (result.IsValid) return Ok(await _service.CreateAsync(dto));
         else
         {
             return BadRequest(result.Errors);
@@ -45,6 +49,8 @@ public class CatalogController : ControllerBase
     }
 
     [HttpPut("{catalogId}")]
+    [Authorize(Roles = "Admin")]
+
     public async Task<IActionResult> UpdateAsync(long catalogId, [FromForm] CatalogUpdateDto dto)
     {
         var updateValidator = new CatalogUpdateValidator();
@@ -54,6 +60,8 @@ public class CatalogController : ControllerBase
     }
 
     [HttpDelete]
+    [Authorize(Roles = "Admin")]
+
     public async Task<IActionResult> DeleteAsync(long catalogId)
         => Ok(await _service.DeleteAsync(catalogId));
 
@@ -64,5 +72,5 @@ public class CatalogController : ControllerBase
     //    => Ok(catalogId); 
     //#endregion
 
-    
+
 }

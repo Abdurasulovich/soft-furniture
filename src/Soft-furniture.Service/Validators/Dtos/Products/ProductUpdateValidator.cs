@@ -1,11 +1,6 @@
 ﻿using FluentValidation;
 using Soft_furniture.Service.Common.Helpers;
 using Soft_furniture.Service.Dtos.Products;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Soft_furniture.Service.Validators.Dtos.Products;
 
@@ -40,5 +35,5 @@ public class ProductUpdateValidator : AbstractValidator<ProductsUpdateDto>
         RuleFor(dto => dto.Description).NotNull().NotEmpty().WithMessage("Description field is required!")
             .MinimumLength(20).WithMessage("Description text must be more than 20 characters!");
     }
-    
+
 }

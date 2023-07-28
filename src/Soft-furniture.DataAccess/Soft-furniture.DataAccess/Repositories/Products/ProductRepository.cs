@@ -1,17 +1,7 @@
 ﻿using Dapper;
-using Soft_furniture.DataAccess.Common.Interfaces;
 using Soft_furniture.DataAccess.Interfaces.Products;
 using Soft_furniture.DataAccess.Utils;
-using Soft_furniture.DataAccess.ViewModels.Furniture_Types;
-using Soft_furniture.Domain.Entities.Furniture_Catalog;
-using Soft_furniture.Domain.Entities.Furniture_Type;
 using Soft_furniture.Domain.Entities.Products;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Soft_furniture.DataAccess.Repositories.Products;
 
@@ -92,7 +82,7 @@ public class ProductRepository : BaseRepository, IProductRepository
         }
         catch
         {
-            return new  List<Product>();
+            return new List<Product>();
         }
         finally
         {

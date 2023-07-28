@@ -11,9 +11,9 @@ public class User : Human
 
     public bool PhoneNumberConfirmed { get; set; }
 
-    public string Password_hash { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
 
     public string Salt { get; set; } = string.Empty;
 
-    public IdentityRole Role { get; set; }
+    public IdentityRole IdentityRole { get; set; }
 }
