@@ -4,8 +4,8 @@ using Soft_furniture.Domain.Entities.Furniture_Type;
 
 namespace Soft_furniture.DataAccess.Interfaces.Types;
 
-public interface ITypeRepository : IRepository<Furniture_Type, Furniture_Type>,
-    IGetAll<Furniture_typeViewModel>
+public interface ITypeRepository : IRepository<Furniture_Type, Furniture_Type>
 {
-
+    public Task<IList<Furniture_Type>> GetAllByCatalogIdAsync(long catalogId);
+    public Task<Furniture_Type> GetByNameAsync(string name);
 }

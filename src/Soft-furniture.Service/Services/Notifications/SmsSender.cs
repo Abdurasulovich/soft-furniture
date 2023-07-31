@@ -9,7 +9,6 @@ namespace Soft_furniture.Service.Services.Notifications;
 public class SmsSender : ISmsSender
 {
     private readonly string BASE_URL = "";
-    private readonly string API_KEY = "";
     private readonly string SENDER = "";
     private readonly string EMAIL = "";
     private readonly string PASSWORD = "";

@@ -9,7 +9,7 @@ using Soft_furniture.Service.Validators.Dtos.Delivers;
 
 namespace Soft_furniture.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/DeliverRegister")]
     [ApiController]
     public class DeliverRegisterController : ControllerBase
     {
@@ -58,7 +58,7 @@ namespace Soft_furniture.WebApi.Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> LoginAsync([FromBody] LoginDto loginDto)
+        public async Task<IActionResult> LoginAsync([FromQuery] LoginDto loginDto)
         {
             var validator = new LoginValidator();
             var valResult = validator.Validate(loginDto);

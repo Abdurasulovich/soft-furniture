@@ -15,7 +15,7 @@ public static class JwtConfigureation
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = config["Issure"],
+                    ValidIssuer = config["Issuer"],
                     ValidateAudience = true,
                     ValidAudience = config["Audience"],
                     ValidateLifetime = true,

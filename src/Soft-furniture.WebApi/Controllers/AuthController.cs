@@ -55,7 +55,7 @@ public class AuthController : ControllerBase
 
     [HttpPost("login")]
     [AllowAnonymous]
-    public async Task<IActionResult> LoginAsync([FromBody] LoginDto loginDto)
+    public async Task<IActionResult> LoginAsync([FromQuery] LoginDto loginDto)
     {
         var validator = new LoginValidator();
         var valResult = validator.Validate(loginDto);

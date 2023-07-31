@@ -13,7 +13,7 @@ public interface ITypeService
 
     public Task<long> CountAsync();
 
-    public Task<IList<Furniture_typeViewModel>> GetAllAsync(PaginationParams @params);
+    public Task<IList<Furniture_Type>> GetAllByCatalogIdAsync(long catalogId);
 
     public Task<Furniture_Type> GetByIdAsync(long typeId);
 

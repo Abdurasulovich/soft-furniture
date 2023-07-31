@@ -65,7 +65,7 @@ public class CatalogService : ICatalogService
     {
         if (_memoryCache.TryGetValue(catalogId, out Catalog cachedCatalog))
         {
-            return cachedCatalog!;
+            return cachedCatalog;
         }
         else
         {

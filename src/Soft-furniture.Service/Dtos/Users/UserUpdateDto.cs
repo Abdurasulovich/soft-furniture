@@ -1,4 +1,6 @@
-﻿namespace Soft_furniture.Service.Dtos.Users;
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace Soft_furniture.Service.Dtos.Users;
 
 public class UserUpdateDto
 {

@@ -7,7 +7,7 @@ using Soft_furniture.Service.Validators.Dtos.Delivers;
 
 namespace Soft_furniture.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/delivers")]
     [ApiController]
     public class DeliverController : ControllerBase
     {
@@ -28,10 +28,10 @@ namespace Soft_furniture.WebApi.Controllers
 
         //Get by Id Deliver
 
-        [HttpGet("DeliverId")]
+        [HttpGet("{DeliverId}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetById(long UserId)
-            => Ok(await _service.GetByIdAsync(UserId));
+        public async Task<IActionResult> GetById(long DeliverId)
+            => Ok(await _service.GetByIdAsync(DeliverId));
 
         //Count Delivers
 

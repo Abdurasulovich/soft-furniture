@@ -153,4 +153,25 @@ public class ProductRepository : BaseRepository, IProductRepository
             await _connection.CloseAsync();
         }
     }
+
+    public async Task<Product> GetAllByProductNameAsync(string productName)
+    {
+        try
+        {
+            await _connection.OpenAsync();
+            string query = "SELECT * FROM products WHERE name = @productName";
+
+            var result = await _connection.QuerySingleAsync<Product>(query, new { name = productName });
+            return result;
+
+        }
+        catch
+        {
+            return null;
+        }
+        finally
+        {
+            await _connection.CloseAsync();
+        }
+    }
 }

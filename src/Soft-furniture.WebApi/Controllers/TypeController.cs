@@ -21,8 +21,8 @@ namespace Soft_furniture.WebApi.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllAsync([FromQuery] int page = 1)
-            => Ok(await _service.GetAllAsync(new PaginationParams(page, maxPageSize)));
+        public async Task<IActionResult> GetAllAsync([FromQuery] long catalogId)
+            => Ok(await _service.GetAllByCatalogIdAsync(catalogId));
 
         [HttpGet("{typeId}")]
         [AllowAnonymous]
@@ -55,7 +55,7 @@ namespace Soft_furniture.WebApi.Controllers
         public async Task<IActionResult> UpdateAsync(long typeId, [FromForm] TypeUpdateDto dto)
             => Ok(await _service.UpdateAsync(typeId, dto));
 
-        [HttpDelete]
+        [HttpDelete("{typeId}")]
         [Authorize(Roles = "Admin")]
 
         public async Task<IActionResult> DeleteAsync(long typeId)

@@ -8,6 +8,8 @@ public class Order : Auditable
 
     public long DeliverId { get; set; }
 
+    public long ProductId { get; set; }
+
     public double ProductPrice { get; set; }
 
     public double DeliveryPrice { get; set; }
@@ -26,5 +28,5 @@ public class Order : Auditable
 
     public bool IsPaid { get; set; }
 
-    public PaymentType Payment { get; set; }
+    public PaymentType PaymentType { get; set; }
 }

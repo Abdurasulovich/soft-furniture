@@ -12,7 +12,7 @@ public interface IProductService
 
     public Task<bool> DeleteAsync(long productId);
 
-    public Task<IList<Product>> GetAllByTypeIdAsync(long productId, PaginationParams @params);
+    public Task<IList<Product>> GetAllByTypeIdAsync(long typeId, PaginationParams @params);
 
     public Task<bool> UpdateAsync(long id, ProductsUpdateDto dto);
 

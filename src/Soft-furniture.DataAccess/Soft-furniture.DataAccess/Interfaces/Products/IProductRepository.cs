@@ -8,4 +8,5 @@ public interface IProductRepository : IRepository<Product, Product>,
     ISearchable<Product>
 {
     public Task<IList<Product>> GetAllByTypeIdAsync(long typeId, PaginationParams @params);
+    public Task<Product> GetAllByProductNameAsync(string productName);
 }

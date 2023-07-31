@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Extensions.Caching.Memory;
+using Soft_furniture.DataAccess.Interfaces.Catalogs;
 using Soft_furniture.DataAccess.Interfaces.Types;
 using Soft_furniture.DataAccess.Utils;
 using Soft_furniture.DataAccess.ViewModels.Furniture_Types;
@@ -10,6 +12,7 @@ using Soft_furniture.Service.Common.Helpers;
 using Soft_furniture.Service.Dtos.Types;
 using Soft_furniture.Service.Interfaces.Common;
 using Soft_furniture.Service.Interfaces.Furniture_types;
+using System.Runtime.CompilerServices;
 
 namespace Soft_furniture.Service.Services.Furniture_types;
 
@@ -17,33 +20,40 @@ public class TypeService : ITypeService
 {
     private readonly ITypeRepository _typeRepository;
     private readonly IFileService _fileService;
+    private readonly ICatalogRepository _catalogRepository;
     private readonly IMemoryCache _memoryCache;
     private const int CACHED_SECONDS = 30;
 
     public TypeService(ITypeRepository typeRepository,
-        IFileService fileService, IMemoryCache memoryCache)
+        IFileService fileService, IMemoryCache memoryCache,
+        ICatalogRepository catalogRepository)
     {
         this._typeRepository = typeRepository;
         this._fileService = fileService;
         this._memoryCache = memoryCache;
-
+        this._catalogRepository = catalogRepository;
     }
     public async Task<long> CountAsync() => await _typeRepository.CountAsync();
 
     public async Task<bool> CreateAsync(TypeCreateDto dto)
     {
-        string imagepath = await _fileService.UploadImageAsync(dto.ImagePath);
-        Furniture_Type type = new Furniture_Type()
+        var type = await _typeRepository.GetByNameAsync(dto.Name);
+        if (type != null) throw new AlreadyExistException();
+        else
         {
-            Name = dto.Name,
-            FurnitureCatalogId = dto.FurnitureCatalogId,
-            ImagePath = imagepath,
-            Description = dto.Description,
-            CreatedAt = TimeHelper.GetDateTime(),
-            UpdatedAt = TimeHelper.GetDateTime()
-        };
-        var result = await _typeRepository.CreateAsync(type);
-        return result > 0;
+            string imagepath = await _fileService.UploadImageAsync(dto.ImagePath);
+            Furniture_Type types = new Furniture_Type()
+            {
+                Name = dto.Name,
+                FurnitureCatalogId = dto.FurnitureCatalogId,
+                ImagePath = imagepath,
+                Description = dto.Description,
+                CreatedAt = TimeHelper.GetDateTime(),
+                UpdatedAt = TimeHelper.GetDateTime()
+            };
+            var result = await _typeRepository.CreateAsync(types);
+            return result > 0;
+        }
     }
 
     public async Task<bool> DeleteAsync(long typeId)
@@ -58,9 +68,11 @@ public class TypeService : ITypeService
         return dbResult > 0;
     }
 
-    public async Task<IList<Furniture_typeViewModel>> GetAllAsync(PaginationParams @params)
+    public async Task<IList<Furniture_Type>> GetAllByCatalogIdAsync(long catalogId)
     {
-        var type = await _typeRepository.GetAllAsync(@params);
+        var catalog = await _catalogRepository.GetByIdAsync(catalogId);
+        if (catalog is null) throw new CatalogNotFoundExeption();
+        var type = await _typeRepository.GetAllByCatalogIdAsync(catalogId);
         return type;
     }
 
@@ -82,6 +94,8 @@ public class TypeService : ITypeService
 
     public async Task<bool> UpdateAsync(long typeId, TypeUpdateDto dto)
     {
+        var catalog = await _catalogRepository.GetByIdAsync(dto.FurnitureCatalogId);
+        if (catalog is null) throw new CatalogNotFoundExeption();
         var type = await _typeRepository.GetByIdAsync(typeId);
         if (type is null) throw new TypeNotFoundException();
 

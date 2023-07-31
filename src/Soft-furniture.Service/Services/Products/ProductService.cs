@@ -5,9 +5,11 @@ using Soft_furniture.Domain.Entities.Products;
 using Soft_furniture.Domain.Exceptions.Catalog;
 using Soft_furniture.Domain.Exceptions.Files;
 using Soft_furniture.Domain.Exceptions.Product;
+using Soft_furniture.Domain.Exceptions.Type;
 using Soft_furniture.Service.Common.Helpers;
 using Soft_furniture.Service.Dtos.Products;
 using Soft_furniture.Service.Interfaces.Common;
+using Soft_furniture.Service.Interfaces.Furniture_types;
 using Soft_furniture.Service.Interfaces.Products;
 
 namespace Soft_furniture.Service.Services.Products;
@@ -16,20 +18,26 @@ public class ProductService : IProductService
 {
     private readonly IProductRepository _productRepository;
     private readonly IFileService _fileService;
+    private readonly ITypeService _typeService;
     private readonly IMemoryCache _memoryCache;
     private const int CACHED_SECONDS = 30;
 
     public ProductService(IProductRepository productRepository,
-        IFileService fileService, IMemoryCache memoryCache)
+        IFileService fileService, IMemoryCache memoryCache, ITypeService typeService)
     {
         this._productRepository = productRepository;
         this._fileService = fileService;
         this._memoryCache = memoryCache;
+        this._typeService = typeService;
     }
     public async Task<long> CountAsync() => await _productRepository.CountAsync();
 
     public async Task<bool> CreateAsync(ProductsCreateDto dto)
     {
+         var products = await _productRepository.GetAllByProductNameAsync(dto.Name);
+        if (products is not null) throw new ProductAlreadyExsistException();
+        var typeId = await _typeService.GetByIdAsync(dto.FurnitureTypeId);
+        if (typeId is null) throw new TypeNotFoundException();
         string imagepath = await _fileService.UploadImageAsync(dto.ImagePath);
         Product product = new Product()
         {
@@ -58,10 +66,15 @@ public class ProductService : IProductService
         return dbResult > 0;
     }
 
-    public async Task<IList<Product>> GetAllByTypeIdAsync(long productId, PaginationParams @params)
+    public async Task<IList<Product>> GetAllByTypeIdAsync( long typeId, PaginationParams @params)
     {
-        var product = await _productRepository.GetAllByTypeIdAsync(productId, @params);
-        return product;
+        var type = await _typeService.GetByIdAsync(typeId);
+        if (type is null) throw new TypeNotFoundException();
+        else
+        {
+            var product = await _productRepository.GetAllByTypeIdAsync(typeId, @params);
+            return product;
+        }
     }
 
     public async Task<Product> GetByIdAsync(long productId)

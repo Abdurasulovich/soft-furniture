@@ -70,20 +70,19 @@ public class TypeRepository : BaseRepository, ITypeRepository
         }
     }
 
-    public async Task<IList<Furniture_typeViewModel>> GetAllAsync(PaginationParams @params)
+    public async Task<IList<Furniture_Type>> GetAllByCatalogIdAsync(long catalogId)
     {
         try
         {
             await _connection.OpenAsync();
-            string query = "SELECT * FROM \"FurnitureTypeViewModel\" ORDER BY id desc " +
-                $"offset {@params.GetSkipCount()} limit {@params.PageSize}";
-            var result = (await _connection.QueryAsync<Furniture_typeViewModel>(query)).ToList();
+            string query = $"SELECT * FROM furniture_type WHERE furniture_catalog_id ={catalogId} ORDER BY id DESC";
+            var result = (await _connection.QueryAsync<Furniture_Type>(query)).ToList();
             return result;
 
         }
         catch
         {
-            return new List<Furniture_typeViewModel>();
+            return new List<Furniture_Type>();
         }
         finally
         {
@@ -99,6 +98,27 @@ public class TypeRepository : BaseRepository, ITypeRepository
             string query = "SELECT * FROM furniture_type WHERE id = @Id";
 
             var result = await _connection.QuerySingleAsync<Furniture_Type>(query, new { Id = id });
+            return result;
+
+        }
+        catch
+        {
+            return null;
+        }
+        finally
+        {
+            await _connection.CloseAsync();
+        }
+    }
+
+    public async Task<Furniture_Type> GetByNameAsync(string name)
+    {
+        try
+        {
+            await _connection.OpenAsync();
+            string query = "SELECT * FROM furniture_type WHERE name = @Name";
+
+            var result = await _connection.QuerySingleAsync<Furniture_Type>(query, new { Name = name });
             return result;
 
         }
@@ -133,4 +153,5 @@ public class TypeRepository : BaseRepository, ITypeRepository
             await _connection.CloseAsync();
         }
     }
+
 }

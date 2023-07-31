@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Soft_furniture.DataAccess.Interfaces.Orders;
 using Soft_furniture.DataAccess.Utils;
+using Soft_furniture.DataAccess.ViewModels.Orders;
 using Soft_furniture.Domain.Entities.Orders;
 
 namespace Soft_furniture.DataAccess.Repositories.Orders;
@@ -32,10 +33,10 @@ public class OrderRepository : BaseRepository, IOrderRepository
         {
             await _connection.OpenAsync();
             string query = "INSERT INTO " +
-                "public.orders(user_id, deliver_id, product_price, delivery_price, total_price, latitude, longitude, " +
-                "status, is_contracted, description, is_paid, payment_type, created_at, updated_at) " +
+                "orders(user_id, deliver_id, product_price, delivery_price, total_price, latitude, longitude, " +
+                "status, is_contracted, description, is_paid, payment_type, created_at, updated_at, product_id) " +
                 "VALUES (@UserId, @DeliverId, @ProductPrice, @DeliveryPrice, @TotalPrice, @Latitude, @Longitude, @Status, " +
-                "@IsContracted, @Description, @IsPaid, @Payment, @CreatedAt, @UpdatedAt);";
+                "@IsContracted, @Description, @IsPaid, @PaymentType, @CreatedAt, @UpdatedAt, @ProductId);";
             var result = await _connection.ExecuteAsync(query, entity);
             return result;
         }
@@ -73,7 +74,7 @@ public class OrderRepository : BaseRepository, IOrderRepository
         try
         {
             await _connection.OpenAsync();
-            string query = "SELECT * FROM public.orders Order By id Desc " +
+            string query = "SELECT * FROM orders " +
                 $"Offset {@params.GetSkipCount()} Limit {@params.PageSize}";
             var result = (await _connection.QueryAsync<Order>(query)).ToList();
             return result;
@@ -82,6 +83,26 @@ public class OrderRepository : BaseRepository, IOrderRepository
         catch
         {
             return new List<Order>();
+        }
+        finally
+        {
+            await _connection.CloseAsync();
+        }
+    }
+
+    public async Task<IList<OrderVM>> GetAllUserOrderAsync(long userId)
+    {
+        try
+        {
+            await _connection.OpenAsync();
+            string query = $"SELECT * FROM \"UserOrders\" WHERE user_id = {userId} ORDER BY total_price DESC";
+            var result = (await _connection.QueryAsync<OrderVM>(query)).ToList();
+            return result;
+
+        }
+        catch
+        {
+            return new List<OrderVM>();
         }
         finally
         {
@@ -116,7 +137,7 @@ public class OrderRepository : BaseRepository, IOrderRepository
             string query = "UPDATE public.orders SET " +
                 "SET user_id=@UserId, deliver_id=@DeliverId, product_price=@ProductPrice, delivery_price=@DeliveryPrice, " +
                 "total_price=@TotalPrice, latitude=@Latitude, longitude=@Longitude, status=@Status, is_contracted=@IsContracted, " +
-                "description=@Description, is_paid=@IsPaid, payment_type=@Payment, created_at=@CreatedAt, updated_at=@UpdatedAt" +
+                "description=@Description, is_paid=@IsPaid, payment_type=@Payment, created_at=@CreatedAt, updated_at=@UpdatedAt, product_id=@ProductId " +
                 $"WHERE id={id};";
             var result = await _connection.ExecuteAsync(query, entity);
             return result;

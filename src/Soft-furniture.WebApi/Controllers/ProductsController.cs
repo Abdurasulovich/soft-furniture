@@ -39,7 +39,7 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> CountAsync()
         => Ok(await _service.CountAsync());
 
-    [HttpGet("Search")]
+    [HttpGet("{Search}")]
     [AllowAnonymous]
 
     public async Task<IActionResult> SearchAnsyc([FromQuery] string search, int page = 1)
