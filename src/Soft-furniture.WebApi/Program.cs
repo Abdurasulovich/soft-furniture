@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Identity;
 using Soft_furniture.DataAccess.Interfaces.Catalogs;
 using Soft_furniture.DataAccess.Interfaces.Delivers;
 using Soft_furniture.DataAccess.Interfaces.Orders;
@@ -32,6 +33,7 @@ using Soft_furniture.Service.Services.Orders;
 using Soft_furniture.Service.Services.Products;
 using Soft_furniture.Service.Services.Users;
 using Soft_furniture.WebApi.Configuretions;
+using Soft_furniture.WebApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,10 +71,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IIdentityService, IdentityService>();
 
 
-
 builder.Services.AddSingleton<ISmsSender, SmsSender>();
-builder.ConfigureJwtAuth();
-builder.ConfigureSwaggerAuth();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -87,6 +86,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseStaticFiles();
+app.UseMiddleware<Soft_furniture.WebApi.Middlewares.ExceptionHandlerMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

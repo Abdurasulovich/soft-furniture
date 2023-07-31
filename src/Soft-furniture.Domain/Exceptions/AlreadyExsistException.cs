@@ -2,9 +2,9 @@
 
 namespace Soft_furniture.Domain.Exceptions;
 
-public class AlreadyExsistException : Exception
+public class AlreadyExsistException : ClientException
 {
-    public HttpStatusCode StatusCode { get; } = HttpStatusCode.NotFound;
+    public override HttpStatusCode StatusCode { get; } = HttpStatusCode.NotFound;
 
-    public string TitleMessage { get; protected set; } = String.Empty;
+    public override string TitleMessage { get; protected set; } = String.Empty;
 }

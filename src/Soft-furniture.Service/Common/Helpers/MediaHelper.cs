@@ -20,6 +20,7 @@ public class MediaHelper
             ".png",
             //Bmp files
             ".bmp",
+
         };
     }
 }

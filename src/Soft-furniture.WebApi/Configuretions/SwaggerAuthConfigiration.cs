@@ -1,5 +1,4 @@
 ﻿using Microsoft.OpenApi.Models;
-using System.Runtime.CompilerServices;
 
 namespace Soft_furniture.WebApi.Configuretions;
 
@@ -11,7 +10,7 @@ public static class SwaggerAuthConfigiration
         {
             options.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "SoftFurnirureApi",
+                Title = "SoftFurnitureApi",
                 Version = "v1"
             });
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

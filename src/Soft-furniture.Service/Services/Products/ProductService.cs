@@ -34,30 +34,35 @@ public class ProductService : IProductService
 
     public async Task<bool> CreateAsync(ProductsCreateDto dto)
     {
-         var products = await _productRepository.GetAllByProductNameAsync(dto.Name);
-        if (products is not null) throw new ProductAlreadyExsistException();
-        var typeId = await _typeService.GetByIdAsync(dto.FurnitureTypeId);
-        if (typeId is null) throw new TypeNotFoundException();
-        string imagepath = await _fileService.UploadImageAsync(dto.ImagePath);
-        Product product = new Product()
+        var products = await _productRepository.GetAllByProductNameAsync(dto.Name);
+        if (products is null)
         {
-            Name = dto.Name,
-            ImagePath = imagepath,
-            Description = dto.Description,
-            FurnitureTypeId = dto.FurnitureTypeId,
-            UnitPrice = dto.UnitPrice,
-            CreatedAt = TimeHelper.GetDateTime(),
-            UpdatedAt = TimeHelper.GetDateTime()
-        };
+            var typeId = await _typeService.GetByIdAsync(dto.FurnitureTypeId);
+            if (typeId is null) throw new TypeNotFoundException();
+            string imagepath = await _fileService.UploadImageAsync(dto.ImagePath);
+            Product product = new Product()
+            {
+                Name = dto.Name,
+                ImagePath = imagepath,
+                Description = dto.Description,
+                FurnitureTypeId = dto.FurnitureTypeId,
+                UnitPrice = dto.UnitPrice,
+                CreatedAt = TimeHelper.GetDateTime(),
+                UpdatedAt = TimeHelper.GetDateTime()
+            };
 
-        var result = await _productRepository.CreateAsync(product);
-        return result > 0;
+            var result = await _productRepository.CreateAsync(product);
+            return result > 0;
+        }else
+        {
+            throw new ProductAlreadyExsistException();
+        }
     }
 
     public async Task<bool> DeleteAsync(long productId)
     {
         var product = await _productRepository.GetByIdAsync(productId);
-        if (product is null) throw new CatalogNotFoundExeption();
+        if (product is null) throw new TypeNotFoundException();
 
         var result = await _fileService.DeleteImageAsync(product.ImagePath);
         if (result == false) throw new ImageNotFoundException();

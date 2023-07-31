@@ -2,9 +2,9 @@
 
 namespace Soft_furniture.Domain.Exceptions;
 
-public class NotFoundExeption : Exception
+public class NotFoundExeption : ClientException
 {
-    public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.NotFound;
+    public override HttpStatusCode StatusCode { get; } = HttpStatusCode.NotFound;
 
-    public string TitleMessage { get; protected set; } = String.Empty;
+    public override string TitleMessage { get; protected set; } = String.Empty;
 }

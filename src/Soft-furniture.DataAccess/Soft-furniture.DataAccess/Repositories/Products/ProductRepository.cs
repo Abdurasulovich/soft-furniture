@@ -159,9 +159,9 @@ public class ProductRepository : BaseRepository, IProductRepository
         try
         {
             await _connection.OpenAsync();
-            string query = "SELECT * FROM products WHERE name = @productName";
+            string query = $"SELECT * FROM products WHERE name = @productName";
 
-            var result = await _connection.QuerySingleAsync<Product>(query, new { name = productName });
+            var result = await _connection.QuerySingleAsync<Product>(query, new { productName = productName });
             return result;
 
         }
